@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Property Analyzer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <div class="ambient-bg">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <nav class="top-nav glass">
+    <div class="nav-brand">
+      <i data-lucide="building-2" class="icon-brand"></i>
+      <span>AI Property Analyzer</span>
+    </div>
+    <div class="nav-actions">
+      <button class="nav-btn" id="btn-manual" aria-label="Valutazione manuale">
+        <i data-lucide="pen-tool"></i>
+      </button>
+      <button class="nav-btn" id="btn-settings" aria-label="Impostazioni">
+        <i data-lucide="settings"></i>
+      </button>
+    </div>
+  </nav>
+
+  <main class="app">
+    <!-- HOME / RISULTATI -->
+    <section id="page-home" class="page active">
+      <div class="search-container" id="search-container">
+        <div class="search-brand" id="search-brand">
+          <i data-lucide="building-2" class="search-brand-icon"></i>
+          <h1>Valuta un immobile con l'AI</h1>
+          <p class="search-subtitle">Incolla l'URL di un annuncio da Immobiliare.it o Idealista.it</p>
+        </div>
+
+        <div class="search-box-wrapper">
+          <div class="search-box glass">
+            <i data-lucide="link" class="search-icon"></i>
+            <input
+              type="url"
+              id="url-input"
+              placeholder="https://www.immobiliare.it/annunci/..."
+              autocomplete="off"
+            />
+            <button id="btn-analyze" class="btn-primary">
+              <span class="btn-text">Analizza con l'AI</span>
+              <span class="btn-loader hidden"></span>
+            </button>
+          </div>
+          <p class="search-hint">Supporta Immobiliare.it e Idealista.it</p>
+        </div>
+      </div>
+
+      <div class="results-container hidden" id="results-container">
+        <!-- Verdetto hero -->
+        <div class="verdict-card glass" id="verdict-card">
+          <div class="verdict-badge" id="verdict-badge">
+            <i data-lucide="trending-down" id="verdict-icon"></i>
+            <span id="verdict-text">AFFARE</span>
+          </div>
+          <div class="verdict-body">
+            <div class="score-ring">
+              <svg viewBox="0 0 120 120" class="score-svg">
+                <defs>
+                  <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#38bdf8" />
+                    <stop offset="100%" stop-color="#818cf8" />
+                  </linearGradient>
+                </defs>
+                <circle class="score-track" cx="60" cy="60" r="52"></circle>
+                <circle class="score-progress" id="score-progress" cx="60" cy="60" r="52"></circle>
+              </svg>
+              <div class="score-value">
+                <span id="score-number">0</span>
+                <small>/100</small>
+              </div>
+            </div>
+            <div class="verdict-info">
+              <h2 id="verdict-title">Investment Score</h2>
+              <p id="verdict-description">Analisi in corso...</p>
+              <div class="meta-pills">
+                <span class="pill" id="pill-time"><i data-lucide="clock"></i> <span>-- ms</span></span>
+                <span class="pill" id="pill-portal"><i data-lucide="globe"></i> <span>--</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screenshot quando il testo è insufficiente -->
+        <div class="screenshot-card glass hidden" id="screenshot-card">
+          <div class="data-header">
+            <i data-lucide="image"></i>
+            <h3>Screenshot Annuncio</h3>
+          </div>
+          <img id="screenshot-img" src="" alt="Screenshot pagina annuncio" />
+          <p class="screenshot-hint">
+            Lo scraping non ha estratto testo dalla pagina. Ecco lo screenshot grezzo dell'annuncio.
+          </p>
+        </div>
+
+        <!-- Grid dati -->
+        <div class="data-grid">
+          <div class="data-card glass">
+            <div class="data-header">
+              <i data-lucide="home"></i>
+              <h3>Dati Immobile</h3>
+            </div>
+            <div class="data-body" id="property-data-body">
+              <div class="data-row"><span>Prezzo</span><strong id="prop-prezzo">--</strong></div>
+              <div class="data-row"><span>Superficie</span><strong id="prop-mq">--</strong></div>
+              <div class="data-row"><span>Prezzo / m²</span><strong id="prop-prezzo-mq">--</strong></div>
+              <div class="data-row"><span>Locali</span><strong id="prop-locali">--</strong></div>
+              <div class="data-row"><span>Camere</span><strong id="prop-camere">--</strong></div>
+              <div class="data-row"><span>Bagni</span><strong id="prop-bagni">--</strong></div>
+              <div class="data-row"><span>Piano</span><strong id="prop-piano">--</strong></div>
+              <div class="data-row"><span>Classe energetica</span><strong id="prop-classe">--</strong></div>
+              <div class="data-row"><span>Anno costruzione</span><strong id="prop-anno">--</strong></div>
+              <div class="data-row"><span>Tipologia</span><strong id="prop-tipologia">--</strong></div>
+              <div class="data-row"><span>Città</span><strong id="prop-citta">--</strong></div>
+              <div class="data-row"><span>Zona</span><strong id="prop-zona">--</strong></div>
+              <div class="data-row"><span>Indirizzo</span><strong id="prop-indirizzo">--</strong></div>
+            </div>
+          </div>
+
+          <div class="data-card glass">
+            <div class="data-header">
+              <i data-lucide="scale"></i>
+              <h3>Confronto OMI</h3>
+            </div>
+            <div class="data-body" id="omi-data-body">
+              <div class="omi-highlight">
+                <div class="omi-value">
+                  <span class="omi-label">Prezzo medio OMI</span>
+                  <span class="omi-number" id="omi-medio">--</span>
+                  <span class="omi-unit">€/m²</span>
+                </div>
+              </div>
+              <div class="data-row"><span>Zona OMI</span><strong id="omi-zona">--</strong></div>
+              <div class="data-row"><span>Città OMI</span><strong id="omi-citta">--</strong></div>
+              <div class="data-row"><span>Prezzo min OMI</span><strong id="omi-min">--</strong></div>
+              <div class="data-row"><span>Prezzo max OMI</span><strong id="omi-max">--</strong></div>
+              <div class="data-row"><span>Scostamento</span><strong id="omi-scostamento">--</strong></div>
+              <div class="data-row"><span>Semestre</span><strong id="omi-semestre">--</strong></div>
+              <div class="data-row"><span>Fonte</span><small id="omi-fonte">Agenzia delle Entrate</small></div>
+              <div class="data-row omi-note hidden" id="omi-note-row"><span>Note</span><small id="omi-note"></small></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <!-- VALUTAZIONE MANUALE -->
+    <section id="page-manual" class="page">
+      <div class="settings-container">
+        <div class="settings-card glass">
+          <div class="settings-header">
+            <button class="back-btn" id="btn-back-manual"><i data-lucide="arrow-left"></i></button>
+            <h2>Valutazione Manuale</h2>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="manual-prezzo">Prezzo (€)</label>
+              <input type="number" id="manual-prezzo" placeholder="280000" />
+            </div>
+            <div class="form-group">
+              <label for="manual-mq">Superficie (m²)</label>
+              <input type="number" id="manual-mq" placeholder="85" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="manual-citta">Città</label>
+              <input type="text" id="manual-citta" placeholder="Milano" />
+            </div>
+            <div class="form-group">
+              <label for="manual-zona">Zona</label>
+              <input type="text" id="manual-zona" placeholder="Navigli" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="manual-locali">Locali</label>
+              <input type="number" id="manual-locali" placeholder="3" />
+            </div>
+            <div class="form-group">
+              <label for="manual-classe">Classe energetica</label>
+              <select id="manual-classe">
+                <option value="">--</option>
+                <option value="A4">A4</option>
+                <option value="A3">A3</option>
+                <option value="A2">A2</option>
+                <option value="A1">A1</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+                <option value="E">E</option>
+                <option value="F">F</option>
+                <option value="G">G</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="manual-camere">Camere</label>
+              <input type="number" id="manual-camere" placeholder="2" />
+            </div>
+            <div class="form-group">
+              <label for="manual-bagni">Bagni</label>
+              <input type="number" id="manual-bagni" placeholder="1" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="manual-tipologia">Tipologia</label>
+              <input type="text" id="manual-tipologia" placeholder="Appartamento" />
+            </div>
+            <div class="form-group">
+              <label for="manual-piano">Piano</label>
+              <input type="text" id="manual-piano" placeholder="3° di 5" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="manual-anno">Anno costruzione</label>
+              <input type="number" id="manual-anno" placeholder="1985" />
+            </div>
+            <div class="form-group">
+              <label for="manual-indirizzo">Indirizzo</label>
+              <input type="text" id="manual-indirizzo" placeholder="Via Tortona 15" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="manual-url">URL annuncio (opzionale)</label>
+            <input type="url" id="manual-url" placeholder="https://..." />
+          </div>
+
+          <div class="settings-actions">
+            <button class="btn-primary btn-full" id="btn-evaluate-manual">Calcola valutazione</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-settings" class="page">
+      <div class="settings-container">
+        <div class="settings-card glass">
+          <div class="settings-header">
+            <button class="back-btn" id="btn-back"><i data-lucide="arrow-left"></i></button>
+            <h2>Impostazioni</h2>
+          </div>
+
+          <div class="form-group">
+            <label for="setting-provider">
+              <i data-lucide="server"></i>
+              Provider AI
+            </label>
+            <select id="setting-provider">
+              <option value="openai">OpenAI</option>
+              <option value="moonshot">Moonshot AI (Kimi)</option>
+            </select>
+            <p class="field-hint">Scegli il provider AI per l'estrazione dati.</p>
+          </div>
+
+          <div class="form-group">
+            <label for="setting-api-key">
+              <i data-lucide="key"></i>
+              API Key
+            </label>
+            <input
+              type="password"
+              id="setting-api-key"
+              placeholder="sk-..."
+            />
+            <p class="field-hint">Chiave API del provider selezionato. Salvata solo nel browser.</p>
+          </div>
+
+          <div class="form-group">
+            <label for="setting-model">
+              <i data-lucide="brain-circuit"></i>
+              Modello AI
+            </label>
+            <select id="setting-model"></select>
+            <p class="field-hint">Modello usato per l'estrazione dati dall'annuncio.</p>
+          </div>
+
+          <div class="form-group hidden" id="group-base-url">
+            <label for="setting-base-url">
+              <i data-lucide="link"></i>
+              Base URL (opzionale)
+            </label>
+            <input
+              type="url"
+              id="setting-base-url"
+              placeholder="https://api.example.com/v1"
+            />
+            <p class="field-hint">Usalo solo se devi sovrascrivere l'URL di default del provider.</p>
+          </div>
+
+          <div class="form-group">
+            <label for="setting-headless">
+              <i data-lucide="eye"></i>
+              Modalità headless
+            </label>
+            <select id="setting-headless">
+              <option value="true">Attiva (browser nascosto)</option>
+              <option value="false">Disattiva (browser visibile — anti-bot)</option>
+            </select>
+            <p class="field-hint">Disattiva se il sito blocca lo scraping (es. Immobiliare.it).</p>
+          </div>
+
+          <div class="form-group">
+            <label for="setting-anti-bot">
+              <i data-lucide="shield"></i>
+              Usa proxy anti-bot
+            </label>
+            <select id="setting-anti-bot">
+              <option value="false">Disattivato</option>
+              <option value="true">Attivato (ScrapingBee)</option>
+            </select>
+            <p class="field-hint">Attiva solo se hai configurato SCRAPINGBEE_API_KEY nel backend.</p>
+          </div>
+
+          <div class="form-group">
+            <label for="omi-zip-upload">
+              <i data-lucide="database"></i>
+              Aggiorna dataset OMI
+            </label>
+            <input type="file" id="omi-zip-upload" accept=".zip" />
+            <input
+              type="text"
+              id="omi-semestre-input"
+              placeholder="Semestre (es. 2025-II)"
+              style="margin-top: 8px;"
+            />
+            <p class="field-hint">Carica il ZIP ufficiale Agenzia delle Entrate (QI_*_VALORI.csv).</p>
+            <button class="btn-primary btn-full" id="btn-update-omi" style="margin-top: 8px;">
+              Aggiorna dataset OMI
+            </button>
+            <div class="settings-status hidden" id="omi-update-status">
+              <i data-lucide="check-circle"></i>
+              <span>Dataset OMI aggiornato</span>
+            </div>
+          </div>
+
+          <div class="settings-actions">
+            <button class="btn-primary btn-full" id="btn-save-settings">Salva impostazioni</button>
+          </div>
+
+          <div class="settings-status hidden" id="settings-status">
+            <i data-lucide="check-circle"></i>
+            <span>Impostazioni salvate correttamente</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <small>AI Property Analyzer & Valuation v1.0.0</small>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+citta,zona,tipologia,stato_conservativo,prezzo_min_mq,prezzo_max_mq,semestre
+Milano,A - Centro Storico,Appartamento,Ottimo,6500,11000,2023-II
+Milano,A - Centro Storico,Appartamento,Normale,5000,8500,2023-II
+Milano,B1 - Semicentro Nord,Appartamento,Ottimo,4200,6500,2023-II
+Milano,B1 - Semicentro Nord,Appartamento,Normale,3200,5000,2023-II
+Milano,B2 - Semicentro Sud (Navigli),Appartamento,Ottimo,4000,6200,2023-II
+Milano,B2 - Semicentro Sud (Navigli),Appartamento,Normale,3000,4800,2023-II
+Milano,C1 - Periferia Nord,Appartamento,Ottimo,2800,4200,2023-II
+Milano,C1 - Periferia Nord,Appartamento,Normale,2200,3500,2023-II
+Milano,C2 - Periferia Sud,Appartamento,Ottimo,2500,3800,2023-II
+Milano,C2 - Periferia Sud,Appartamento,Normale,2000,3200,2023-II
+Roma,A - Centro Storico,Appartamento,Ottimo,7000,12000,2023-II
+Roma,A - Centro Storico,Appartamento,Normale,5500,9000,2023-II
+Roma,B1 - Prati / Flaminio,Appartamento,Ottimo,4500,7000,2023-II
+Roma,B1 - Prati / Flaminio,Appartamento,Normale,3500,5500,2023-II
+Roma,B2 - Parioli / Trieste,Appartamento,Ottimo,4800,7500,2023-II
+Roma,B2 - Parioli / Trieste,Appartamento,Normale,3800,6000,2023-II
+Roma,C1 - Periferia Nord-Est (Nomentana),Appartamento,Ottimo,2800,4200,2023-II
+Roma,C1 - Periferia Nord-Est (Nomentana),Appartamento,Normale,2200,3400,2023-II
+Roma,C2 - Periferia Sud (EUR),Appartamento,Ottimo,3000,4800,2023-II
+Roma,C2 - Periferia Sud (EUR),Appartamento,Normale,2300,3800,2023-II
+Torino,A - Centro Storico,Appartamento,Ottimo,2800,4500,2023-II
+Torino,A - Centro Storico,Appartamento,Normale,2000,3500,2023-II
+Torino,B1 - Semicentro (Crocetta),Appartamento,Ottimo,2500,3800,2023-II
+Torino,B1 - Semicentro (Crocetta),Appartamento,Normale,1800,2800,2023-II
+Torino,C1 - Periferia Nord,Appartamento,Ottimo,1600,2400,2023-II
+Torino,C1 - Periferia Nord,Appartamento,Normale,1200,1900,2023-II
+Napoli,A - Centro Storico,Appartamento,Ottimo,2500,4000,2023-II
+Napoli,A - Centro Storico,Appartamento,Normale,1800,3000,2023-II
+Napoli,B1 - Chiaia / Posillipo,Appartamento,Ottimo,3500,5500,2023-II
+Napoli,B1 - Chiaia / Posillipo,Appartamento,Normale,2800,4500,2023-II
+Napoli,C1 - Periferia,Appartamento,Ottimo,1200,2000,2023-II
+Napoli,C1 - Periferia,Appartamento,Normale,900,1600,2023-II
+Bologna,A - Centro Storico,Appartamento,Ottimo,3500,5500,2023-II
+Bologna,A - Centro Storico,Appartamento,Normale,2800,4500,2023-II
+Bologna,B1 - Semicentro,Appartamento,Ottimo,2500,3800,2023-II
+Bologna,B1 - Semicentro,Appartamento,Normale,2000,3200,2023-II
+Bologna,C1 - Periferia,Appartamento,Ottimo,1800,2800,2023-II
+Bologna,C1 - Periferia,Appartamento,Normale,1400,2200,2023-II
+Firenze,A - Centro Storico,Appartamento,Ottimo,5500,9000,2023-II
+Firenze,A - Centro Storico,Appartamento,Normale,4000,6500,2023-II
+Firenze,B1 - Oltrarno / Campo di Marte,Appartamento,Ottimo,3500,5500,2023-II
+Firenze,B1 - Oltrarno / Campo di Marte,Appartamento,Normale,2800,4500,2023-II
+Firenze,C1 - Periferia,Appartamento,Ottimo,2200,3200,2023-II
+Firenze,C1 - Periferia,Appartamento,Normale,1800,2800,2023-II
+Venezia,A - Centro Storico,Appartamento,Ottimo,5000,8000,2023-II
+Venezia,A - Centro Storico,Appartamento,Normale,3500,6000,2023-II
+Venezia,B1 - Mestre,Appartamento,Ottimo,2000,3200,2023-II
+Venezia,B1 - Mestre,Appartamento,Normale,1600,2600,2023-II
+Genova,A - Centro Storico,Appartamento,Ottimo,1500,2500,2023-II
+Genova,A - Centro Storico,Appartamento,Normale,1100,1900,2023-II
+Genova,B1 - Semicentro,Appartamento,Ottimo,1300,2000,2023-II
+Genova,B1 - Semicentro,Appartamento,Normale,1000,1700,2023-II
+Palermo,A - Centro Storico,Appartamento,Ottimo,1200,2000,2023-II
+Palermo,A - Centro Storico,Appartamento,Normale,900,1600,2023-II
+Palermo,B1 - Semicentro,Appartamento,Ottimo,1000,1700,2023-II
+Palermo,B1 - Semicentro,Appartamento,Normale,800,1400,2023-II
+Bari,A - Centro Storico,Appartamento,Ottimo,1500,2500,2023-II
+Bari,A - Centro Storico,Appartamento,Normale,1100,1900,2023-II
+Bari,B1 - Semicentro,Appartamento,Ottimo,1200,1900,2023-II
+Bari,B1 - Semicentro,Appartamento,Normale,950,1600,2023-II
+Catania,A - Centro Storico,Appartamento,Ottimo,1000,1800,2023-II
+Catania,A - Centro Storico,Appartamento,Normale,750,1400,2023-II
+Catania,B1 - Semicentro,Appartamento,Ottimo,900,1500,2023-II
+Catania,B1 - Semicentro,Appartamento,Normale,700,1200,2023-II
