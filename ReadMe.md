@@ -140,8 +140,8 @@ Content-Type: application/json
 {
   "prezzo": 200000,
   "mq": 100,
-  "citta": "Trabia",
-  "zona": "Villette",
+  "citta": "Roma",
+  "zona": "Centro",
   "locali": 3,
   "classe_energetica": "C",
   "tipologia": "Appartamento"
