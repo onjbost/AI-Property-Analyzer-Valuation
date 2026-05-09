@@ -154,6 +154,47 @@
               <div class="data-row omi-note hidden" id="omi-note-row"><span>Note</span><small id="omi-note"></small></div>
             </div>
           </div>
+
+          <div class="data-card glass sentiment-card hidden" id="sentiment-card">
+            <div class="data-header">
+              <i data-lucide="sparkles"></i>
+              <h3>Analisi Qualitativa AI</h3>
+            </div>
+            <div class="data-body" id="sentiment-body">
+              <div class="sentiment-section" id="strengths-section">
+                <h4 class="sentiment-title"><i data-lucide="trending-up"></i> Punti di forza</h4>
+                <ul class="sentiment-list" id="strengths-list"></ul>
+              </div>
+              <div class="sentiment-section" id="weaknesses-section">
+                <h4 class="sentiment-title"><i data-lucide="trending-down"></i> Punti deboli</h4>
+                <ul class="sentiment-list" id="weaknesses-list"></ul>
+              </div>
+              <div class="sentiment-total hidden" id="sentiment-total-row">
+                <span>Aggiustamento totale</span>
+                <strong id="sentiment-total"></strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="data-card glass adjusted-card hidden" id="adjusted-card">
+            <div class="data-header">
+              <i data-lucide="calculator"></i>
+              <h3>Stima Prezzo Corretto</h3>
+            </div>
+            <div class="data-body" id="adjusted-body">
+              <div class="adjusted-highlight">
+                <div class="adjusted-value">
+                  <span class="adjusted-label">Prezzo corretto stimato</span>
+                  <span class="adjusted-number" id="adjusted-prezzo">--</span>
+                  <span class="adjusted-unit">€</span>
+                </div>
+              </div>
+              <div class="data-row"><span>Prezzo base OMI</span><strong id="adjusted-base">--</strong></div>
+              <div class="data-row"><span>Aggiustamento qualità</span><strong id="adjusted-aggiustamento">--</strong></div>
+              <div class="data-row"><span>Scostamento vs corretto</span><strong id="adjusted-scostamento">--</strong></div>
+              <div class="data-row"><span>Verdetto qualitativo</span><strong id="adjusted-verdict">--</strong></div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -374,7 +415,7 @@
   </main>
 
   <footer class="app-footer">
-    <small>AI Property Analyzer & Valuation v1.1.0</small>
+    <small>AI Property Analyzer & Valuation v1.2.0</small>
   </footer>
 
   <script src="js/app.js"></script>

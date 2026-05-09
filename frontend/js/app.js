@@ -74,6 +74,21 @@ const els = {
   omiFonte: document.getElementById('omi-fonte'),
   omiNote: document.getElementById('omi-note'),
   omiNoteRow: document.getElementById('omi-note-row'),
+
+  // Sentiment
+  sentimentCard: document.getElementById('sentiment-card'),
+  strengthsList: document.getElementById('strengths-list'),
+  weaknessesList: document.getElementById('weaknesses-list'),
+  sentimentTotalRow: document.getElementById('sentiment-total-row'),
+  sentimentTotal: document.getElementById('sentiment-total'),
+
+  // Adjusted
+  adjustedCard: document.getElementById('adjusted-card'),
+  adjustedPrezzo: document.getElementById('adjusted-prezzo'),
+  adjustedBase: document.getElementById('adjusted-base'),
+  adjustedAggiustamento: document.getElementById('adjusted-aggiustamento'),
+  adjustedScostamento: document.getElementById('adjusted-scostamento'),
+  adjustedVerdict: document.getElementById('adjusted-verdict'),
 };
 
 // Helpers
@@ -290,9 +305,99 @@ const renderReport = (data) => {
     els.screenshotImg.src = '';
   }
 
+  // Sentiment & Adjusted
+  renderSentiment(data.sentiment_analysis);
+  renderAdjusted(data.adjusted_comparison);
+
   // Show results
   els.resultsContainer.classList.remove('hidden');
   lucide.createIcons();
+};
+
+// Render sentiment analysis
+const renderSentiment = (sentiment) => {
+  if (!sentiment) {
+    els.sentimentCard.classList.add('hidden');
+    return;
+  }
+
+  const strengths = sentiment.strengths || [];
+  const weaknesses = sentiment.weaknesses || [];
+
+  if (strengths.length === 0 && weaknesses.length === 0) {
+    els.sentimentCard.classList.add('hidden');
+    return;
+  }
+
+  els.sentimentCard.classList.remove('hidden');
+
+  const makeItem = (item, positive) => {
+    const li = document.createElement('li');
+    li.className = 'sentiment-item';
+    const badgeClass = positive ? 'impact-positive' : 'impact-negative';
+    const sign = item.price_impact_percent > 0 ? '+' : '';
+    li.innerHTML = `<span>${escapeHtml(item.description)}</span><span class="impact-badge ${badgeClass}">${sign}${item.price_impact_percent.toFixed(1)}%</span>`;
+    return li;
+  };
+
+  els.strengthsList.innerHTML = '';
+  els.weaknessesList.innerHTML = '';
+
+  if (strengths.length > 0) {
+    strengths.forEach((s) => els.strengthsList.appendChild(makeItem(s, true)));
+    document.getElementById('strengths-section').classList.remove('hidden');
+  } else {
+    document.getElementById('strengths-section').classList.add('hidden');
+  }
+
+  if (weaknesses.length > 0) {
+    weaknesses.forEach((w) => els.weaknessesList.appendChild(makeItem(w, false)));
+    document.getElementById('weaknesses-section').classList.remove('hidden');
+  } else {
+    document.getElementById('weaknesses-section').classList.add('hidden');
+  }
+
+  // Totale
+  const total = [...strengths, ...weaknesses].reduce((sum, i) => sum + (i.price_impact_percent || 0), 0);
+  if (total !== 0) {
+    els.sentimentTotalRow.classList.remove('hidden');
+    const sign = total > 0 ? '+' : '';
+    els.sentimentTotal.textContent = `${sign}${total.toFixed(1)}%`;
+    els.sentimentTotal.style.color = total > 0 ? 'var(--success)' : total < 0 ? 'var(--danger)' : 'var(--text-primary)';
+  } else {
+    els.sentimentTotalRow.classList.add('hidden');
+  }
+};
+
+// Render adjusted price comparison
+const renderAdjusted = (adjusted) => {
+  if (!adjusted) {
+    els.adjustedCard.classList.add('hidden');
+    return;
+  }
+
+  els.adjustedCard.classList.remove('hidden');
+  els.adjustedPrezzo.textContent = fmtMoney(adjusted.prezzo_corretto);
+  els.adjustedBase.textContent = fmtMoney(adjusted.prezzo_base_omi);
+
+  const adj = adjusted.totale_aggiustamento_percentuale;
+  const adjSign = adj > 0 ? '+' : '';
+  els.adjustedAggiustamento.textContent = `${adjSign}${adj.toFixed(1)}%`;
+  els.adjustedAggiustamento.style.color = adj > 0 ? 'var(--success)' : adj < 0 ? 'var(--danger)' : 'var(--text-primary)';
+
+  const scost = adjusted.scostamento_percentuale;
+  els.adjustedScostamento.textContent = fmtPct(scost);
+  els.adjustedScostamento.style.color = scost === null || scost === undefined ? '' : scost < 0 ? 'var(--success)' : scost > 0 ? 'var(--danger)' : 'var(--warning)';
+
+  const v = adjusted.verdict;
+  els.adjustedVerdict.textContent = v;
+  els.adjustedVerdict.style.color = v === 'AFFARE' ? 'var(--success)' : v === 'SOPRASTIMATO' ? 'var(--danger)' : 'var(--warning)';
+};
+
+const escapeHtml = (text) => {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 };
 
 // Manual evaluate

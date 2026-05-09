@@ -16,7 +16,7 @@ class Settings(BaseSettings):
 
     # --- Applicazione ---
     app_name: str = "AI Property Analyzer & Valuation"
-    app_version: str = "1.1.0"
+    app_version: str = "1.2.0"
     app_env: str = "development"
     log_level: str = "INFO"
 

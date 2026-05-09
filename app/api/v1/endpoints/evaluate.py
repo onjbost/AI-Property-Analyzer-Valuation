@@ -13,9 +13,11 @@ from fastapi.responses import JSONResponse
 
 from app.core.logging import logger
 from app.models.property import EvaluationReport, EvaluationRequest, ManualEvaluationRequest, PropertyData, OmiComparison
+from app.services.adjusted_price import compute_adjusted_comparison
 from app.services.extractor import PropertyExtractor
 from app.services.omi_calculator import build_evaluation_report, compute_omi_comparison
 from app.services.scraper import scrape_property
+from app.services.sentiment_analyzer import PropertySentimentAnalyzer
 
 router = APIRouter()
 
@@ -94,7 +96,7 @@ async def evaluate_property(request: EvaluationRequest) -> EvaluationReport:
     )
 
     if scraper_result.text_content or use_vision_fallback:
-        logger.info("[2/3] Estrazione dati con AI...")
+        logger.info("[2/4] Estrazione dati con AI...")
         try:
             extractor = PropertyExtractor(
                 provider=request.provider,
@@ -138,9 +140,27 @@ async def evaluate_property(request: EvaluationRequest) -> EvaluationReport:
                 )
 
     # ------------------------------------------------------------------ #
-    # STEP 3 — Confronto OMI e generazione report
+    # STEP 3 — Analisi qualitativa AI (sentiment)
     # ------------------------------------------------------------------ #
-    logger.info("[3/3] Confronto OMI e calcolo Investment Score...")
+    sentiment_analysis = None
+    if property_data is not None and request.use_sentiment_analysis:
+        logger.info("[3/4] Analisi qualitativa AI...")
+        try:
+            analyzer = PropertySentimentAnalyzer(
+                provider=request.provider,
+                api_key=request.api_key,
+                model=request.model,
+                base_url=request.base_url,
+            )
+            sentiment_analysis = await analyzer.analyze(property_data, scraper_result)
+        except Exception as exc:
+            logger.warning("Analisi qualitativa non riuscita, prosegue senza: %s", exc)
+            sentiment_analysis = None
+
+    # ------------------------------------------------------------------ #
+    # STEP 4 — Confronto OMI e generazione report
+    # ------------------------------------------------------------------ #
+    logger.info("[4/4] Confronto OMI, prezzo corretto e calcolo Investment Score...")
 
     if property_data is None:
         # Report parziale: screenshot disponibile ma nessun dato estratto
@@ -161,8 +181,13 @@ async def evaluate_property(request: EvaluationRequest) -> EvaluationReport:
         )
     else:
         omi_comparison = compute_omi_comparison(property_data)
+        adjusted_comparison = compute_adjusted_comparison(
+            property_data, omi_comparison, sentiment_analysis
+        )
         elapsed_ms = int((time.monotonic() - start_time) * 1000)
         report = build_evaluation_report(property_data, omi_comparison, processing_time_ms=elapsed_ms)
+        report.sentiment_analysis = sentiment_analysis
+        report.adjusted_comparison = adjusted_comparison
         if scraper_result.screenshot_base64:
             report.screenshot_base64 = scraper_result.screenshot_base64
 

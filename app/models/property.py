@@ -60,6 +60,7 @@ class EvaluationRequest(BaseModel):
     model: Optional[str] = Field(None, description="Modello AI da utilizzare")
     base_url: Optional[str] = Field(None, description="Base URL personalizzato per l'API (opzionale)")
     use_vision: bool = Field(True, description="Se True, usa l'AI Vision quando il testo è insufficiente")
+    use_sentiment_analysis: bool = Field(True, description="Se True, esegue analisi qualitativa AI con punti di forza/deboli")
     headless: Optional[bool] = Field(None, description="Se False, mostra il browser visibile (utile per siti con anti-bot)")
     use_anti_bot: bool = Field(False, description="Se True, usa ScrapingBee proxy per bypassare anti-bot")
 
@@ -109,11 +110,52 @@ class OmiComparison(BaseModel):
     note: Optional[str] = Field(None, description="Note aggiuntive sul confronto OMI (es. uso di comune proxy)")
 
 
+class SentimentItem(BaseModel):
+    """Singolo punto di forza o debolezza con impatto sul prezzo."""
+
+    description: str = Field(..., description="Descrizione qualitativa del punto")
+    price_impact_percent: float = Field(
+        ...,
+        description="Impatto percentuale sul prezzo (positivo = aumenta, negativo = diminuisce)",
+    )
+
+
+class SentimentAnalysis(BaseModel):
+    """Analisi qualitativa AI di punti di forza e deboli dell'immobile."""
+
+    strengths: list[SentimentItem] = Field(default_factory=list, description="Max 5 punti di forza")
+    weaknesses: list[SentimentItem] = Field(default_factory=list, description="Max 5 punti deboli")
+
+
+class AdjustedPriceComparison(BaseModel):
+    """Confronto prezzo basato su stima OMI + aggiustamenti qualitativi."""
+
+    prezzo_base_omi: Optional[float] = Field(None, description="Prezzo stimato da OMI (prezzo_medio_omi × mq)")
+    totale_aggiustamento_percentuale: Optional[float] = Field(
+        None, description="Somma algebrica degli impatti qualitativi (%)")
+    prezzo_corretto: Optional[float] = Field(None, description="Prezzo base OMI corretto con aggiustamenti")
+    scostamento_percentuale: Optional[float] = Field(
+        None,
+        description="Scostamento % del prezzo reale vs prezzo_corretto. Negativo = sottostimato.",
+    )
+    is_underpriced: bool = Field(False, description="True se il prezzo reale è inferiore al prezzo_corretto")
+    verdict: Literal["AFFARE", "MERCATO", "SOPRASTIMATO"] = Field(
+        "MERCATO", description="Verdetto basato sullo scostamento corretto"
+    )
+    verdict_description: str = Field("", description="Spiegazione del verdetto corretto")
+
+
 class EvaluationReport(BaseModel):
     """Report completo di valutazione immobiliare."""
 
     property_data: PropertyData = Field(..., description="Dati strutturati dell'immobile")
     omi_comparison: OmiComparison = Field(..., description="Confronto con valori OMI")
+    sentiment_analysis: Optional[SentimentAnalysis] = Field(
+        None, description="Analisi qualitativa AI di punti di forza/deboli"
+    )
+    adjusted_comparison: Optional[AdjustedPriceComparison] = Field(
+        None, description="Confronto prezzo con aggiustamenti qualitativi"
+    )
 
     investment_score: float = Field(
         ...,
