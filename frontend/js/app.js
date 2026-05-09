@@ -89,6 +89,15 @@ const els = {
   weaknessesList: document.getElementById('weaknesses-list'),
   sentimentTotalRow: document.getElementById('sentiment-total-row'),
   sentimentTotal: document.getElementById('sentiment-total'),
+  btnEditSentiment: document.getElementById('btn-edit-sentiment'),
+  sentimentBody: document.getElementById('sentiment-body'),
+  sentimentEditBody: document.getElementById('sentiment-edit-body'),
+  editStrengthsList: document.getElementById('edit-strengths-list'),
+  editWeaknessesList: document.getElementById('edit-weaknesses-list'),
+  sentimentAddText: document.getElementById('sentiment-add-text'),
+  btnEstimateSentiment: document.getElementById('btn-estimate-sentiment'),
+  btnRecalculate: document.getElementById('btn-recalculate'),
+  btnCancelEdit: document.getElementById('btn-cancel-edit'),
 
   // Adjusted (inside price-compare card)
   adjustedCol: document.getElementById('adjusted-col'),
@@ -249,6 +258,7 @@ const saveSettings = () => {
 
 // Render report
 const renderReport = (data) => {
+  _lastReport = data;
   const pd = data.property_data;
   const om = data.omi_comparison;
 
@@ -433,6 +443,187 @@ const escapeHtml = (text) => {
   return div.innerHTML;
 };
 
+// ------------------------------------------------------------------
+// Sentiment editing state
+// ------------------------------------------------------------------
+let _editSentiment = null; // { strengths: [], weaknesses: [] }
+let _lastReport = null;    // ultimo report completo
+
+const enterEditMode = () => {
+  if (!_lastReport || !_lastReport.sentiment_analysis) return;
+  const sa = _lastReport.sentiment_analysis;
+  _editSentiment = {
+    strengths: sa.strengths ? sa.strengths.map((s) => ({ ...s })) : [],
+    weaknesses: sa.weaknesses ? sa.weaknesses.map((w) => ({ ...w })) : [],
+  };
+  els.sentimentBody.classList.add('hidden');
+  els.sentimentEditBody.classList.remove('hidden');
+  renderEditSentiment();
+  lucide.createIcons();
+};
+
+const cancelEdit = () => {
+  _editSentiment = null;
+  els.sentimentAddText.value = '';
+  els.sentimentBody.classList.remove('hidden');
+  els.sentimentEditBody.classList.add('hidden');
+};
+
+const renderEditSentiment = () => {
+  if (!_editSentiment) return;
+
+  const makeEditItem = (item, index, isStrength) => {
+    const li = document.createElement('li');
+    li.className = 'sentiment-edit-item';
+    li.dataset.index = index;
+    li.dataset.type = isStrength ? 'strength' : 'weakness';
+    const sign = item.price_impact_percent >= 0 ? '+' : '';
+    li.innerHTML = `
+      <span>${escapeHtml(item.description)}</span>
+      <input type="number" step="0.1" class="sentiment-input" value="${item.price_impact_percent.toFixed(1)}" />
+      <span style="font-size:0.8rem;color:var(--text-muted);">%</span>
+      <button class="btn-delete-item" title="Rimuovi" data-index="${index}" data-type="${isStrength ? 'strength' : 'weakness'}">
+        <i data-lucide="trash-2" style="width:16px;height:16px;"></i>
+      </button>
+    `;
+    // Update value on change
+    const input = li.querySelector('input');
+    input.addEventListener('change', () => {
+      const val = parseFloat(input.value);
+      if (!isNaN(val)) {
+        if (isStrength) _editSentiment.strengths[index].price_impact_percent = val;
+        else _editSentiment.weaknesses[index].price_impact_percent = val;
+      }
+    });
+    // Delete button
+    const btn = li.querySelector('.btn-delete-item');
+    btn.addEventListener('click', () => {
+      if (isStrength) _editSentiment.strengths.splice(index, 1);
+      else _editSentiment.weaknesses.splice(index, 1);
+      renderEditSentiment();
+      lucide.createIcons();
+    });
+    return li;
+  };
+
+  els.editStrengthsList.innerHTML = '';
+  els.editWeaknessesList.innerHTML = '';
+
+  if (_editSentiment.strengths.length > 0) {
+    _editSentiment.strengths.forEach((s, i) => els.editStrengthsList.appendChild(makeEditItem(s, i, true)));
+    document.getElementById('edit-strengths-section').classList.remove('hidden');
+  } else {
+    document.getElementById('edit-strengths-section').classList.add('hidden');
+  }
+
+  if (_editSentiment.weaknesses.length > 0) {
+    _editSentiment.weaknesses.forEach((w, i) => els.editWeaknessesList.appendChild(makeEditItem(w, i, false)));
+    document.getElementById('edit-weaknesses-section').classList.remove('hidden');
+  } else {
+    document.getElementById('edit-weaknesses-section').classList.add('hidden');
+  }
+};
+
+const estimateNewSentiment = async () => {
+  const text = els.sentimentAddText.value.trim();
+  if (!text) {
+    showToast('Inserisci una descrizione per il bonus/malus');
+    return;
+  }
+  if (!_lastReport) return;
+
+  const savedProvider = localStorage.getItem('ai_provider') || 'openai';
+  const savedKey = localStorage.getItem('ai_api_key') || undefined;
+  const savedModel = localStorage.getItem('ai_model') || undefined;
+  const savedBaseUrl = localStorage.getItem('ai_base_url') || undefined;
+
+  const payload = {
+    text,
+    property_data: _lastReport.property_data,
+    provider: savedProvider,
+    api_key: savedKey,
+    model: savedModel,
+    base_url: savedBaseUrl,
+  };
+  Object.keys(payload).forEach((k) => { if (payload[k] === undefined) delete payload[k]; });
+
+  els.btnEstimateSentiment.disabled = true;
+  els.btnEstimateSentiment.innerHTML = `<i data-lucide="loader-2" class="btn-loader" style="width:16px;height:16px;border-width:2px;display:inline-block;vertical-align:middle;"></i> Stima in corso...`;
+  lucide.createIcons();
+
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/estimate-sentiment`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail?.message || `Errore ${res.status}`);
+    }
+    const data = await res.json();
+    const item = data.item;
+    if (item) {
+      if (item.price_impact_percent >= 0) {
+        _editSentiment.strengths.push(item);
+      } else {
+        _editSentiment.weaknesses.push(item);
+      }
+      els.sentimentAddText.value = '';
+      renderEditSentiment();
+      lucide.createIcons();
+    }
+  } catch (err) {
+    showToast(err.message || 'Errore stima AI');
+  } finally {
+    els.btnEstimateSentiment.disabled = false;
+    els.btnEstimateSentiment.innerHTML = `<i data-lucide="sparkles"></i> Stima con AI`;
+    lucide.createIcons();
+  }
+};
+
+const recalculateWithEditedSentiment = async () => {
+  if (!_lastReport || !_editSentiment) return;
+
+  const payload = {
+    property_data: _lastReport.property_data,
+    omi_comparison: _lastReport.omi_comparison,
+    sentiment_analysis: _editSentiment,
+  };
+
+  els.btnRecalculate.disabled = true;
+  els.btnRecalculate.textContent = 'Ricalcolo in corso...';
+
+  try {
+    const res = await fetch(`${API_BASE}/api/v1/recalculate-adjusted`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail?.message || `Errore ${res.status}`);
+    }
+    const data = await res.json();
+
+    // Aggiorna il report locale
+    _lastReport.adjusted_comparison = data.adjusted_comparison;
+    _lastReport.investment_score = data.investment_score;
+    _lastReport.verdict = data.verdict;
+    _lastReport.verdict_description = data.verdict_description;
+    _lastReport.sentiment_analysis = { ..._editSentiment };
+
+    // Aggiorna UI
+    renderReport(_lastReport);
+    cancelEdit();
+  } catch (err) {
+    showToast(err.message || 'Errore durante il ricalcolo');
+  } finally {
+    els.btnRecalculate.disabled = false;
+    els.btnRecalculate.textContent = 'Ricalcola valutazione';
+  }
+};
+
 // Manual evaluate
 const evaluateManual = async () => {
   const payload = {
@@ -612,4 +803,10 @@ document.addEventListener('DOMContentLoaded', () => {
   els.settingProvider.addEventListener('change', () => {
     populateModels(els.settingProvider.value);
   });
+
+  // Sentiment editing
+  els.btnEditSentiment.addEventListener('click', enterEditMode);
+  els.btnCancelEdit.addEventListener('click', cancelEdit);
+  els.btnEstimateSentiment.addEventListener('click', estimateNewSentiment);
+  els.btnRecalculate.addEventListener('click', recalculateWithEditedSentiment);
 });

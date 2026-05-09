@@ -199,9 +199,16 @@
 
           <div class="data-card glass sentiment-card hidden" id="sentiment-card">
             <div class="data-header">
-              <i data-lucide="sparkles"></i>
-              <h3>Analisi Qualitativa AI</h3>
+              <div class="data-header-left">
+                <i data-lucide="sparkles"></i>
+                <h3>Analisi Qualitativa AI</h3>
+              </div>
+              <button class="btn-edit-sentiment" id="btn-edit-sentiment" title="Modifica bonus/malus">
+                <i data-lucide="pen-line"></i>
+              </button>
             </div>
+
+            <!-- VIEW MODE -->
             <div class="data-body" id="sentiment-body">
               <div class="sentiment-section" id="strengths-section">
                 <h4 class="sentiment-title"><i data-lucide="trending-up"></i> Punti di forza</h4>
@@ -214,6 +221,33 @@
               <div class="sentiment-total hidden" id="sentiment-total-row">
                 <span>Aggiustamento totale</span>
                 <strong id="sentiment-total"></strong>
+              </div>
+            </div>
+
+            <!-- EDIT MODE -->
+            <div class="data-body hidden" id="sentiment-edit-body">
+              <div class="sentiment-edit-section" id="edit-strengths-section">
+                <h4 class="sentiment-title"><i data-lucide="trending-up"></i> Punti di forza</h4>
+                <ul class="sentiment-edit-list" id="edit-strengths-list"></ul>
+              </div>
+              <div class="sentiment-edit-section" id="edit-weaknesses-section">
+                <h4 class="sentiment-title"><i data-lucide="trending-down"></i> Punti deboli</h4>
+                <ul class="sentiment-edit-list" id="edit-weaknesses-list"></ul>
+              </div>
+
+              <div class="sentiment-add-box">
+                <label for="sentiment-add-text">Aggiungi bonus o malus</label>
+                <textarea id="sentiment-add-text" rows="2" placeholder="Es: terrazzo con vista mare, vicinanza metro, rumore stradale..."></textarea>
+                <div class="sentiment-add-actions">
+                  <button class="btn-secondary" id="btn-estimate-sentiment">
+                    <i data-lucide="sparkles"></i> Stima con AI
+                  </button>
+                </div>
+              </div>
+
+              <div class="sentiment-edit-actions">
+                <button class="btn-primary" id="btn-recalculate">Ricalcola valutazione</button>
+                <button class="btn-secondary" id="btn-cancel-edit">Annulla</button>
               </div>
             </div>
           </div>

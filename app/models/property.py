@@ -172,6 +172,40 @@ class EvaluationReport(BaseModel):
     processing_time_ms: Optional[int] = Field(None, description="Tempo di elaborazione in millisecondi")
     screenshot_base64: Optional[str] = Field(None, description="Screenshot della pagina quando il testo è insufficiente")
 
+
+class RecalculateRequest(BaseModel):
+    """Corpo della richiesta per ricalcolare la valutazione con sentiment modificato."""
+
+    property_data: PropertyData = Field(..., description="Dati dell'immobile")
+    omi_comparison: OmiComparison = Field(..., description="Dati OMI già calcolati")
+    sentiment_analysis: SentimentAnalysis = Field(..., description="Analisi qualitativa modificata dall'utente")
+
+
+class RecalculateResponse(BaseModel):
+    """Risposta del ricalcolo con nuova stima corretta."""
+
+    adjusted_comparison: AdjustedPriceComparison = Field(..., description="Nuovo confronto prezzo corretto")
+    investment_score: float = Field(..., ge=0, le=100, description="Investment Score aggiornato")
+    verdict: Literal["AFFARE", "MERCATO", "SOPRASTIMATO"] = Field(..., description="Verdetto aggiornato")
+    verdict_description: str = Field(..., description="Descrizione aggiornata del verdetto")
+
+
+class EstimateSentimentRequest(BaseModel):
+    """Richiesta per stimare l'impatto di un nuovo bonus/malus."""
+
+    text: str = Field(..., min_length=3, description="Descrizione testuale del bonus/malus")
+    property_data: Optional[PropertyData] = Field(None, description="Dati dell'immobile per contesto (opzionale)")
+    provider: Literal["openai", "moonshot", "nvidia"] = Field("openai", description="Provider AI")
+    api_key: Optional[str] = Field(None, description="Chiave API personalizzata")
+    model: Optional[str] = Field(None, description="Modello AI")
+    base_url: Optional[str] = Field(None, description="Base URL personalizzato")
+
+
+class EstimateSentimentResponse(BaseModel):
+    """Risposta con il SentimentItem stimato dall'AI."""
+
+    item: SentimentItem = Field(..., description="Item stimato con descrizione e impatto percentuale")
+
     model_config = {
         "json_schema_extra": {
             "examples": [

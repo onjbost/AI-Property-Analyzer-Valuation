@@ -12,10 +12,20 @@ from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import JSONResponse
 
 from app.core.logging import logger
-from app.models.property import EvaluationReport, EvaluationRequest, ManualEvaluationRequest, PropertyData, OmiComparison
+from app.models.property import (
+    EvaluationReport,
+    EvaluationRequest,
+    ManualEvaluationRequest,
+    PropertyData,
+    OmiComparison,
+    RecalculateRequest,
+    RecalculateResponse,
+    EstimateSentimentRequest,
+    EstimateSentimentResponse,
+)
 from app.services.adjusted_price import compute_adjusted_comparison
 from app.services.extractor import PropertyExtractor
-from app.services.omi_calculator import build_evaluation_report, compute_omi_comparison
+from app.services.omi_calculator import build_evaluation_report, compute_omi_comparison, _compute_investment_score, _determine_verdict
 from app.services.scraper import scrape_property
 from app.services.sentiment_analyzer import PropertySentimentAnalyzer
 
@@ -199,6 +209,106 @@ async def evaluate_property(request: EvaluationRequest) -> EvaluationReport:
     )
 
     return report
+
+
+@router.post(
+    "/recalculate-adjusted",
+    response_model=RecalculateResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Ricalcola la valutazione con sentiment modificato",
+    description="Riceve dati immobile, OMI e una SentimentAnalysis modificata manualmente. Restituisce il nuovo prezzo corretto e verdetto.",
+    tags=["Valutazione"],
+)
+async def recalculate_adjusted(request: RecalculateRequest) -> RecalculateResponse:
+    """
+    Ricalcola la stima qualitativa usando i bonus/malus modificati dall'utente.
+    """
+    logger.info("═══ RICALCOLO QUALITATIVO | città=%s | strengths=%d | weaknesses=%d",
+                request.property_data.citta,
+                len(request.sentiment_analysis.strengths),
+                len(request.sentiment_analysis.weaknesses))
+
+    adjusted = compute_adjusted_comparison(
+        request.property_data,
+        request.omi_comparison,
+        request.sentiment_analysis,
+    )
+
+    if not adjusted:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={
+                "error": "recalculation_failed",
+                "message": "Impossibile ricalcolare: dati OMI o sentiment insufficienti.",
+            },
+        )
+
+    score = _compute_investment_score(
+        scostamento=adjusted.scostamento_percentuale,
+        classe_energetica=request.property_data.classe_energetica,
+        locali=request.property_data.locali,
+    )
+    verdict, verdict_description = _determine_verdict(
+        adjusted.scostamento_percentuale, score
+    )
+
+    logger.info(
+        "═══ RICALCOLO COMPLETATO | verdict=%s | score=%.1f | corretto=%.0f",
+        verdict,
+        score,
+        adjusted.prezzo_corretto or 0,
+    )
+
+    return RecalculateResponse(
+        adjusted_comparison=adjusted,
+        investment_score=score,
+        verdict=verdict,
+        verdict_description=verdict_description,
+    )
+
+
+@router.post(
+    "/estimate-sentiment",
+    response_model=EstimateSentimentResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Stima l'impatto di un bonus/malus",
+    description="Riceve una descrizione testuale e restituisce un SentimentItem con l'impatto percentuale stimato dall'AI.",
+    tags=["Valutazione"],
+)
+async def estimate_sentiment(request: EstimateSentimentRequest) -> EstimateSentimentResponse:
+    """
+    Stima l'impatto percentuale sul prezzo di un singolo bonus/malus.
+    """
+    logger.info("═══ STIMA SENTIMENT | text=%s | provider=%s", request.text[:60], request.provider)
+
+    try:
+        analyzer = PropertySentimentAnalyzer(
+            provider=request.provider,
+            api_key=request.api_key,
+            model=request.model,
+            base_url=request.base_url,
+        )
+        item = await analyzer.estimate_impact(request.text, request.property_data)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={
+                "error": "estimation_failed",
+                "message": str(exc),
+            },
+        )
+    except Exception as exc:
+        logger.exception("Errore durante la stima sentiment: %s", exc)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail={
+                "error": "ai_error",
+                "message": "Errore durante la stima AI del bonus/malus.",
+                "detail": str(exc),
+            },
+        )
+
+    return EstimateSentimentResponse(item=item)
 
 
 @router.post(

@@ -151,6 +151,60 @@ class PropertySentimentAnalyzer:
             logger.warning("Analisi qualitativa fallita, restituisco risultato vuoto: %s", exc)
             return SentimentAnalysis()
 
+    async def estimate_impact(self, text: str, property_data: Optional[PropertyData] = None) -> SentimentItem:
+        """
+        Stima l'impatto percentuale sul prezzo di un singolo bonus/malus descritto testualmente.
+        """
+        logger.info("Stima impatto sentiment | text=%s", text[:80])
+
+        context = ""
+        if property_data:
+            context = f"""
+Contesto immobile:
+- Città: {property_data.citta or 'N/D'}
+- Zona: {property_data.zona or 'N/D'}
+- Tipologia: {property_data.tipologia or 'N/D'}
+- Prezzo: {property_data.prezzo or 'N/D'} €
+- Superficie: {property_data.mq or 'N/D'} m²
+- Piano: {property_data.piano or 'N/D'}
+- Anno costruzione: {property_data.anno_costruzione or 'N/D'}
+"""
+
+        prompt = f"""Sei un esperto analista immobiliare italiano.
+Valuta l'impatto percentuale sul prezzo totale di un immobile della seguente caratteristica.
+
+{context}
+Caratteristica da valutare: "{text}"
+
+Rispondi SEMPRE e SOLO con un oggetto JSON valido:
+{{"description": "...", "price_impact_percent": <float>}}
+
+Regole:
+- L'impatto è una percentuale relativa al PREZZO TOTALE dell'immobile.
+- Deve essere realistico: tipicamente tra -15% e +15%.
+- Positivo se aumenta il valore, negativo se lo diminuisce.
+- NON usare markdown, SOLO JSON.
+"""
+
+        response: ChatCompletion = await self._client.chat.completions.create(
+            model=self._model,
+            response_format={"type": "json_object"},
+            messages=[
+                {"role": "system", "content": "Sei un esperto analista immobiliare. Rispondi solo in JSON."},
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0.2,
+            max_tokens=300,
+        )
+
+        raw = self._parse_response(response)
+        desc = raw.get("description") or text
+        impact = raw.get("price_impact_percent")
+        if impact is None or not isinstance(impact, (int, float)):
+            raise ValueError("Impossibile stimare l'impatto percentuale")
+
+        return SentimentItem(description=str(desc), price_impact_percent=float(impact))
+
     @staticmethod
     def _parse_response(response: ChatCompletion) -> dict:
         """Estrae e parsa il JSON dalla risposta del modello."""
