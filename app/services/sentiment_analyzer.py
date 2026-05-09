@@ -47,6 +47,7 @@ Regole importanti:
 - Cerca di individuare aspetti QUALITATIVI emergenti dalla descrizione testuale, non ovvi dai dati strutturati.
 - Se non ci sono punti rilevanti, usa liste vuote.
 - La somma degli impatti positivi e negativi deve essere ragionevole (tipicamente tra -30% e +30% in totale).
+- ATTENZIONE AL CONTESTO: NON indicare come punto debole la mancanza di ascensore se l'immobile è al piano terra, è una villa/casa unifamiliare, o è un appartamento di un solo piano. Analogamente, non penalizzare la mancanza di garage se l'immobile è in centro storico con ZTL, e non penalizzare la mancanza di giardino se si tratta di un attico/ultimo piano. Valuta sempre il contesto reale dell'immobile prima di assegnare un impatto negativo.
 """
 
 USER_PROMPT = """Analizza l'annuncio immobiliare seguente ed estrai punti di forza e deboli.
