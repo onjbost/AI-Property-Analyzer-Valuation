@@ -106,6 +106,20 @@ class PropertyExtractor:
                 api_key=key,
                 base_url=used_base,
             )
+        elif provider == "nvidia":
+            key = api_key or settings.nvidia_api_key
+            if not key:
+                raise ValueError(
+                    "NVIDIA API key mancante. Inseriscila nelle impostazioni frontend o nel file .env"
+                )
+            masked = key[:4] + "..." + key[-4:]
+            used_base = base_url or settings.nvidia_base_url
+            logger.info("NVIDIA client inizializzato | key=%s | model=%s | base_url=%s", masked, model or settings.nvidia_model, used_base)
+            self._model = model or settings.nvidia_model
+            self._client = AsyncOpenAI(
+                api_key=key,
+                base_url=used_base,
+            )
         else:
             key = api_key or settings.openai_api_key
             if not key:

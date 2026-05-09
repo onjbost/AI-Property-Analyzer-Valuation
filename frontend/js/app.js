@@ -159,6 +159,16 @@ const MODEL_OPTIONS = {
     { value: 'moonshot-v1-32k', label: 'Moonshot v1-32k' },
     { value: 'moonshot-v1-128k', label: 'Moonshot v1-128k' },
   ],
+  nvidia: [
+    { value: 'meta/llama-4-maverick-17b-128e-instruct', label: 'Llama 4 Maverick 17B (consigliato)' },
+    { value: 'meta/llama-3.1-405b-instruct', label: 'Llama 3.1 405B' },
+    { value: 'meta/llama-3.1-70b-instruct', label: 'Llama 3.1 70B' },
+    { value: 'meta/llama-3.1-8b-instruct', label: 'Llama 3.1 8B' },
+    { value: 'nvidia/nemotron-4-340b-instruct', label: 'Nemotron-4 340B' },
+    { value: 'mistralai/mistral-large-2-instruct', label: 'Mistral Large 2' },
+    { value: 'google/gemma-2-27b-it', label: 'Gemma 2 27B' },
+    { value: 'google/gemma-2-9b-it', label: 'Gemma 2 9B' },
+  ],
 };
 
 const populateModels = (provider) => {
@@ -181,7 +191,11 @@ const loadSettings = () => {
   els.settingProvider.value = provider;
   populateModels(provider);
   els.settingApiKey.value = localStorage.getItem('ai_api_key') || '';
-  els.settingModel.value = localStorage.getItem('ai_model') || (provider === 'openai' ? 'gpt-4o' : 'moonshot-v1-8k');
+  const defaultModel =
+    provider === 'openai' ? 'gpt-4o' :
+    provider === 'nvidia' ? 'meta/llama-4-maverick-17b-128e-instruct' :
+    'moonshot-v1-8k';
+  els.settingModel.value = localStorage.getItem('ai_model') || defaultModel;
   els.settingBaseUrl.value = localStorage.getItem('ai_base_url') || '';
   const headlessVal = localStorage.getItem('ai_headless');
   els.settingHeadless.value = headlessVal === null ? 'true' : headlessVal;

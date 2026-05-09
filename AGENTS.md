@@ -4,6 +4,7 @@ Ti occuperai di guidare lo sviluppo di un tool di analisi immobiliare.
 - Python, FastAPI
 - Playwright (Web Scraping)
 - OpenAI API (GPT-4o per estrazione dati)
+- NVIDIA Build API (Llama 3.1, Nemotron, Mistral, Gemma — modelli free via endpoint compatibile OpenAI)
 - Pydantic (Validazione dati)
 ## Core Tasks
 1. Implementare uno scraper resiliente per portali immobiliari ( Immobiliare.it, Idealista).

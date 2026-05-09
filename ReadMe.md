@@ -13,7 +13,7 @@ Gli investitori immobiliari perdono ore a confrontare annunci manualmente. Quest
 ## Caratteristiche
 
 - **Scraping Resiliente**: Playwright con supporto proxy anti-bot (ScrapingBee) e fallback screenshot quando i siti bloccano il crawler.
-- **Estrazione AI Multi-Provider**: Supporta OpenAI (GPT-4o) e Moonshot AI (Kimi) per estrarre dati strutturati da annunci non strutturati.
+- **Estrazione AI Multi-Provider**: Supporta OpenAI (GPT-4o), Moonshot AI (Kimi) e **NVIDIA Build** (Llama 3.1, Nemotron, Mistral, Gemma — modelli free) per estrarre dati strutturati da annunci non strutturati.
 - **Valutazione Manuale**: Inserisci direttamente i dati dell'immobile (senza scraping) per ottenere un report immediato.
 - **Confronto OMI Completo**: Dataset aggiornabile con quotazioni ufficiali Agenzia delle Entrate per tutti i comuni italiani.
 - **Fallback Geografico**: Se un comune non ha dati OMI, il sistema trova automaticamente il comune più vicino geograficamente.
@@ -28,7 +28,7 @@ Gli investitori immobiliari perdono ore a confrontare annunci manualmente. Quest
 |------------|------------|
 | Backend | Python 3.11+, FastAPI, Pydantic |
 | Scraping | Playwright (sync in thread) |
-| AI / LLM | OpenAI GPT-4o, Moonshot AI (Kimi) via AsyncOpenAI |
+| AI / LLM | OpenAI GPT-4o, Moonshot AI (Kimi), NVIDIA Build via AsyncOpenAI |
 | OMI Dataset | CSV ufficiale Agenzia delle Entrate (aggiornabile via webapp) |
 | Frontend | Vanilla JS, HTML5, CSS3 (Glassmorphism) |
 | Proxy | ScrapingBee API (opzionale) |
@@ -81,6 +81,9 @@ OPENAI_API_KEY=sk-...
 # Moonshot AI (obbligatoria se usi Moonshot)
 MOONSHOT_API_KEY=sk-...
 
+# NVIDIA Build (obbligatoria se usi NVIDIA — ottieni key gratuita su https://build.nvidia.com)
+NVIDIA_API_KEY=nvapi-...
+
 # ScrapingBee (opzionale, per proxy anti-bot)
 SCRAPINGBEE_API_KEY=...
 ```
@@ -120,7 +123,7 @@ Content-Type: application/json
 | Campo | Tipo | Default | Descrizione |
 |-------|------|---------|-------------|
 | `url` | string | — | **Obbligatorio** — URL annuncio (Immobiliare.it / Idealista.it) |
-| `provider` | string | `openai` | Provider AI: `openai` o `moonshot` |
+| `provider` | string | `openai` | Provider AI: `openai`, `moonshot` o `nvidia` |
 | `api_key` | string | `.env` | Chiave API personalizzata |
 | `model` | string | `gpt-4o` / `moonshot-v1-8k` | Modello LLM |
 | `headless` | bool | `true` | `false` = browser visibile (anti-bot) |
@@ -173,7 +176,7 @@ L'applicazione include una **Single Page Application** moderna con design glassm
 - **Home**: inserisci l'URL di un annuncio e premi *Analizza con l'AI*
 - **Valutazione Manuale**: inserisci direttamente i dati per un report senza scraping
 - **Impostazioni**:
-  - Scegli provider AI (OpenAI / Moonshot)
+  - Scegli provider AI (OpenAI / Moonshot / NVIDIA Build)
   - Attiva/disattiva proxy anti-bot e modalità headless
   - **Carica ZIP OMI** per aggiornare le quotazioni ufficiali
 - **Report interattivi**: verdetto, investment score, dati immobile, confronto OMI, note proxy
@@ -223,6 +226,9 @@ URL Annuncio
 | `MOONSHOT_API_KEY` | Chiave API Moonshot | — |
 | `MOONSHOT_BASE_URL` | Endpoint Moonshot | `https://api.moonshot.ai/v1` |
 | `MOONSHOT_MODEL` | Modello Moonshot | `moonshot-v1-8k` |
+| `NVIDIA_API_KEY` | Chiave API NVIDIA Build | — |
+| `NVIDIA_BASE_URL` | Endpoint NVIDIA | `https://integrate.api.nvidia.com/v1` |
+| `NVIDIA_MODEL` | Modello NVIDIA | `meta/llama-3.1-405b-instruct` |
 | `SCRAPINGBEE_API_KEY` | Chiave proxy ScrapingBee | — |
 | `PLAYWRIGHT_HEADLESS` | Browser headless di default | `true` |
 | `PLAYWRIGHT_TIMEOUT` | Timeout scraping (ms) | `30000` |
@@ -244,7 +250,7 @@ URL Annuncio
 ## Requisiti
 
 - Python 3.11+
-- Chiave API OpenAI **o** Moonshot AI
+- Chiave API OpenAI, Moonshot AI **o** NVIDIA Build
 - Playwright Chromium installato (`python -m playwright install chromium`)
 
 ---

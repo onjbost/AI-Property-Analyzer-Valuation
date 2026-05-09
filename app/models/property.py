@@ -55,7 +55,7 @@ class PropertyData(BaseModel):
 class EvaluationRequest(BaseModel):
     """Corpo della richiesta all'endpoint /evaluate."""
     url: str = Field(..., description="URL dell'annuncio immobiliare da valutare")
-    provider: Literal["openai", "moonshot"] = Field("openai", description="Provider AI da utilizzare")
+    provider: Literal["openai", "moonshot", "nvidia"] = Field("openai", description="Provider AI da utilizzare")
     api_key: Optional[str] = Field(None, description="Chiave API personalizzata (sovrascrive .env)")
     model: Optional[str] = Field(None, description="Modello AI da utilizzare")
     base_url: Optional[str] = Field(None, description="Base URL personalizzato per l'API (opzionale)")
