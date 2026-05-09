@@ -131,27 +131,51 @@
             </div>
           </div>
 
-          <div class="data-card glass">
+          <div class="data-card glass price-compare-card">
             <div class="data-header">
               <i data-lucide="scale"></i>
-              <h3>Confronto OMI</h3>
+              <h3>Confronto Prezzi</h3>
             </div>
-            <div class="data-body" id="omi-data-body">
-              <div class="omi-highlight">
-                <div class="omi-value">
-                  <span class="omi-label">Prezzo medio OMI</span>
-                  <span class="omi-number" id="omi-medio">--</span>
-                  <span class="omi-unit">€/m²</span>
+            <div class="data-body price-compare-body" id="price-compare-body">
+              <div class="price-compare-col" id="omi-col">
+                <div class="omi-highlight">
+                  <div class="omi-value">
+                    <span class="omi-label">Prezzo medio OMI</span>
+                    <span class="omi-number" id="omi-medio">--</span>
+                    <span class="omi-unit">€/m²</span>
+                  </div>
                 </div>
+                <div class="data-row"><span>Zona OMI</span><strong id="omi-zona">--</strong></div>
+                <div class="data-row"><span>Città OMI</span><strong id="omi-citta">--</strong></div>
+                <div class="data-row"><span>Prezzo min OMI</span><strong id="omi-min">--</strong></div>
+                <div class="data-row"><span>Prezzo max OMI</span><strong id="omi-max">--</strong></div>
+                <div class="data-row"><span>Scostamento</span><strong id="omi-scostamento">--</strong></div>
+                <div class="data-row"><span>Semestre</span><strong id="omi-semestre">--</strong></div>
+                <div class="data-row"><span>Fonte</span><small id="omi-fonte">Agenzia delle Entrate</small></div>
+                <div class="data-row omi-note hidden" id="omi-note-row"><span>Note</span><small id="omi-note"></small></div>
+                <p class="compare-footnote">
+                  <i data-lucide="info" style="width:12px;height:12px;vertical-align:middle;"></i>
+                  Stima basata sulle medie ufficiali OMI (Osservatorio Mercato Immobiliare) dell'Agenzia delle Entrate per zona e tipologia.
+                </p>
               </div>
-              <div class="data-row"><span>Zona OMI</span><strong id="omi-zona">--</strong></div>
-              <div class="data-row"><span>Città OMI</span><strong id="omi-citta">--</strong></div>
-              <div class="data-row"><span>Prezzo min OMI</span><strong id="omi-min">--</strong></div>
-              <div class="data-row"><span>Prezzo max OMI</span><strong id="omi-max">--</strong></div>
-              <div class="data-row"><span>Scostamento</span><strong id="omi-scostamento">--</strong></div>
-              <div class="data-row"><span>Semestre</span><strong id="omi-semestre">--</strong></div>
-              <div class="data-row"><span>Fonte</span><small id="omi-fonte">Agenzia delle Entrate</small></div>
-              <div class="data-row omi-note hidden" id="omi-note-row"><span>Note</span><small id="omi-note"></small></div>
+              <div class="price-compare-divider"></div>
+              <div class="price-compare-col hidden" id="adjusted-col">
+                <div class="adjusted-highlight">
+                  <div class="adjusted-value">
+                    <span class="adjusted-label">Prezzo corretto stimato</span>
+                    <span class="adjusted-number" id="adjusted-prezzo">--</span>
+                    <span class="adjusted-unit">€</span>
+                  </div>
+                </div>
+                <div class="data-row"><span>Prezzo base OMI</span><strong id="adjusted-base">--</strong></div>
+                <div class="data-row"><span>Aggiustamento qualità</span><strong id="adjusted-aggiustamento">--</strong></div>
+                <div class="data-row"><span>Scostamento vs corretto</span><strong id="adjusted-scostamento">--</strong></div>
+                <div class="data-row"><span>Verdetto qualitativo</span><strong id="adjusted-verdict">--</strong></div>
+                <p class="compare-footnote">
+                  <i data-lucide="sparkles" style="width:12px;height:12px;vertical-align:middle;"></i>
+                  Stima basata su OMI corretta con i fattori qualitativi individuati dall'AI (punti di forza e deboli dell'annuncio).
+                </p>
+              </div>
             </div>
           </div>
 
@@ -173,26 +197,6 @@
                 <span>Aggiustamento totale</span>
                 <strong id="sentiment-total"></strong>
               </div>
-            </div>
-          </div>
-
-          <div class="data-card glass adjusted-card hidden" id="adjusted-card">
-            <div class="data-header">
-              <i data-lucide="calculator"></i>
-              <h3>Stima Prezzo Corretto</h3>
-            </div>
-            <div class="data-body" id="adjusted-body">
-              <div class="adjusted-highlight">
-                <div class="adjusted-value">
-                  <span class="adjusted-label">Prezzo corretto stimato</span>
-                  <span class="adjusted-number" id="adjusted-prezzo">--</span>
-                  <span class="adjusted-unit">€</span>
-                </div>
-              </div>
-              <div class="data-row"><span>Prezzo base OMI</span><strong id="adjusted-base">--</strong></div>
-              <div class="data-row"><span>Aggiustamento qualità</span><strong id="adjusted-aggiustamento">--</strong></div>
-              <div class="data-row"><span>Scostamento vs corretto</span><strong id="adjusted-scostamento">--</strong></div>
-              <div class="data-row"><span>Verdetto qualitativo</span><strong id="adjusted-verdict">--</strong></div>
             </div>
           </div>
         </div>
@@ -416,6 +420,11 @@
 
   <footer class="app-footer">
     <small>AI Property Analyzer & Valuation v1.2.0</small>
+    <p class="footer-disclaimer">
+      <strong>Disclaimer:</strong> le stime fornite da questo tool sono indicative e si basano su dati pubblici (OMI) e analisi AI.
+      Non sostituiscono in alcun modo la perizia di un tecnico abilitato (geometra, architetto, agente immobiliare).
+      Si consiglia sempre di affidarsi a un esperto per una valutazione affidabile del valore di mercato.
+    </p>
   </footer>
 
   <script src="js/app.js"></script>

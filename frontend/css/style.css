@@ -645,7 +645,11 @@ html, body {
   line-height: 1.5;
 }
 
-/* Sentiment card */
+/* Sentiment card full width */
+.sentiment-card {
+  grid-column: 1 / -1;
+}
+
 .sentiment-section { margin-bottom: 0.75rem; }
 .sentiment-section:last-child { margin-bottom: 0; }
 
@@ -717,7 +721,41 @@ html, body {
   font-weight: 800;
 }
 
-/* Adjusted price card */
+/* Price compare card (OMI + Adjusted side by side) */
+.price-compare-body {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 1rem;
+}
+
+.price-compare-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.price-compare-divider {
+  width: 1px;
+  background: var(--glass-border);
+  align-self: stretch;
+}
+
+.compare-footnote {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-top: 0.25rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--glass-border);
+}
+
+.compare-footnote svg {
+  display: inline;
+  vertical-align: middle;
+  margin-right: 0.2rem;
+}
+
+/* Adjusted highlight */
 .adjusted-highlight {
   text-align: center;
   padding: 1rem;
@@ -747,6 +785,15 @@ html, body {
   text-align: center;
   padding: 1.5rem;
   color: var(--text-muted);
+}
+
+.footer-disclaimer {
+  max-width: 800px;
+  margin: 0.75rem auto 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+  opacity: 0.8;
 }
 
 /* Error toast */
@@ -799,4 +846,7 @@ html, body {
   .verdict-body { flex-direction: column; align-items: flex-start; }
   .score-ring { align-self: center; }
   .data-grid { grid-template-columns: 1fr; }
+  .sentiment-card { grid-column: auto; }
+  .price-compare-body { grid-template-columns: 1fr; }
+  .price-compare-divider { display: none; }
 }

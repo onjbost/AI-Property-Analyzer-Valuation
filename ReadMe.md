@@ -6,6 +6,14 @@
 
 Uno strumento intelligente per valutare in tempo reale la convenienza degli investimenti immobiliari in Italia.
 
+> ⚠️ **Disclaimer**
+>
+> Le stime fornite da questo tool sono **puramente indicative** e si basano su dati pubblici (OMI — Osservatorio Mercato Immobiliare dell'Agenzia delle Entrate) e su analisi effettuate da modelli di intelligenza artificiale.
+>
+> **Questo tool non sostituisce in alcun modo la perizia di un tecnico abilitato** (geometra, architetto, ingegnere, agente immobiliare). Il valore reale di un immobile dipende da innumerevoli fattori che solo un esperto può valutare con precisione (stato di manutenzione, conformità urbanistica, potenzialità edificatorie, condizioni di mercato locali, ecc.).
+>
+> Lo scopo di questo progetto è **aiutare** chi è alla ricerca di un immobile, chi desidera venderlo o chi vuole investire, fornendo un primo orientamento sui prezzi ideali di riferimento. Si consiglia vivamente di integrare queste informazioni con una vera e propria stima professionale prima di prendere qualsiasi decisione economica.
+
 ## Business Value
 
 Gli investitori immobiliari perdono ore a confrontare annunci manualmente. Questo tool automatizza l'analisi, identificando istantaneamente gli immobili *underpriced* rispetto alla media di mercato (OMI), riducendo il tempo di scouting del 90%.

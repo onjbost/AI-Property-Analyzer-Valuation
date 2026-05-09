@@ -82,8 +82,8 @@ const els = {
   sentimentTotalRow: document.getElementById('sentiment-total-row'),
   sentimentTotal: document.getElementById('sentiment-total'),
 
-  // Adjusted
-  adjustedCard: document.getElementById('adjusted-card'),
+  // Adjusted (inside price-compare card)
+  adjustedCol: document.getElementById('adjusted-col'),
   adjustedPrezzo: document.getElementById('adjusted-prezzo'),
   adjustedBase: document.getElementById('adjusted-base'),
   adjustedAggiustamento: document.getElementById('adjusted-aggiustamento'),
@@ -369,14 +369,14 @@ const renderSentiment = (sentiment) => {
   }
 };
 
-// Render adjusted price comparison
+// Render adjusted price comparison (inside price-compare card)
 const renderAdjusted = (adjusted) => {
   if (!adjusted) {
-    els.adjustedCard.classList.add('hidden');
+    els.adjustedCol.classList.add('hidden');
     return;
   }
 
-  els.adjustedCard.classList.remove('hidden');
+  els.adjustedCol.classList.remove('hidden');
   els.adjustedPrezzo.textContent = fmtMoney(adjusted.prezzo_corretto);
   els.adjustedBase.textContent = fmtMoney(adjusted.prezzo_base_omi);
 
