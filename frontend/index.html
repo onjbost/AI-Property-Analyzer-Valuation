@@ -63,33 +63,51 @@
       <div class="results-container hidden" id="results-container">
         <!-- Verdetto hero -->
         <div class="verdict-card glass" id="verdict-card">
-          <div class="verdict-badge" id="verdict-badge">
-            <i data-lucide="trending-down" id="verdict-icon"></i>
-            <span id="verdict-text">AFFARE</span>
+          <div class="verdict-badges">
+            <div class="verdict-badge" id="verdict-badge">
+              <i data-lucide="trending-down" id="verdict-icon"></i>
+              <span id="verdict-text">AFFARE</span>
+            </div>
+            <div class="verdict-badge hidden" id="verdict-badge-adjusted">
+              <i data-lucide="sparkles" id="verdict-icon-adjusted"></i>
+              <span id="verdict-text-adjusted">--</span>
+            </div>
           </div>
-          <div class="verdict-body">
-            <div class="score-ring">
-              <svg viewBox="0 0 120 120" class="score-svg">
-                <defs>
-                  <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#38bdf8" />
-                    <stop offset="100%" stop-color="#818cf8" />
-                  </linearGradient>
-                </defs>
-                <circle class="score-track" cx="60" cy="60" r="52"></circle>
-                <circle class="score-progress" id="score-progress" cx="60" cy="60" r="52"></circle>
-              </svg>
-              <div class="score-value">
-                <span id="score-number">0</span>
-                <small>/100</small>
+          <div class="verdict-body" id="verdict-body">
+            <div class="verdict-col">
+              <div class="score-ring">
+                <svg viewBox="0 0 120 120" class="score-svg">
+                  <defs>
+                    <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#38bdf8" />
+                      <stop offset="100%" stop-color="#818cf8" />
+                    </linearGradient>
+                  </defs>
+                  <circle class="score-track" cx="60" cy="60" r="52"></circle>
+                  <circle class="score-progress" id="score-progress" cx="60" cy="60" r="52"></circle>
+                </svg>
+                <div class="score-value">
+                  <span id="score-number">0</span>
+                  <small>/100</small>
+                </div>
+              </div>
+              <div class="verdict-info">
+                <h2 id="verdict-title">Investment Score</h2>
+                <p id="verdict-description">Analisi in corso...</p>
+                <div class="meta-pills">
+                  <span class="pill" id="pill-time"><i data-lucide="clock"></i> <span>-- ms</span></span>
+                  <span class="pill" id="pill-portal"><i data-lucide="globe"></i> <span>--</span></span>
+                </div>
               </div>
             </div>
-            <div class="verdict-info">
-              <h2 id="verdict-title">Investment Score</h2>
-              <p id="verdict-description">Analisi in corso...</p>
-              <div class="meta-pills">
-                <span class="pill" id="pill-time"><i data-lucide="clock"></i> <span>-- ms</span></span>
-                <span class="pill" id="pill-portal"><i data-lucide="globe"></i> <span>--</span></span>
+            <div class="verdict-divider hidden" id="verdict-divider"></div>
+            <div class="verdict-col hidden" id="verdict-col-adjusted">
+              <div class="verdict-info">
+                <h2 id="verdict-adjusted-title">Stima Qualitativa AI</h2>
+                <p id="verdict-adjusted-description">--</p>
+                <div class="meta-pills">
+                  <span class="pill" id="pill-adjusted"><i data-lucide="sparkles"></i> <span>--</span></span>
+                </div>
               </div>
             </div>
           </div>

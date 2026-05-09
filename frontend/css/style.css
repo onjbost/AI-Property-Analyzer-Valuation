@@ -314,11 +314,16 @@ html, body {
   gap: 1.25rem;
 }
 
+.verdict-badges {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
 .verdict-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  align-self: flex-start;
   padding: 0.4rem 0.9rem;
   border-radius: 999px;
   font-weight: 800;
@@ -347,9 +352,22 @@ html, body {
 
 .verdict-body {
   display: flex;
+  align-items: stretch;
+  gap: 1.5rem;
+}
+
+.verdict-col {
+  display: flex;
   align-items: center;
-  gap: 1.75rem;
-  flex-wrap: wrap;
+  gap: 1.25rem;
+  flex: 1;
+  min-width: 260px;
+}
+
+.verdict-divider {
+  width: 1px;
+  background: var(--glass-border);
+  align-self: stretch;
 }
 
 .score-ring {
@@ -844,6 +862,8 @@ html, body {
   .search-box input { width: 100%; text-align: center; }
   .btn-primary { width: 100%; justify-content: center; }
   .verdict-body { flex-direction: column; align-items: flex-start; }
+  .verdict-col { flex-direction: column; align-items: flex-start; width: 100%; }
+  .verdict-divider { display: none; }
   .score-ring { align-self: center; }
   .data-grid { grid-template-columns: 1fr; }
   .sentiment-card { grid-column: auto; }

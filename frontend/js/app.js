@@ -47,6 +47,14 @@ const els = {
   verdictDescription: document.getElementById('verdict-description'),
   pillTime: document.getElementById('pill-time'),
   pillPortal: document.getElementById('pill-portal'),
+  verdictBadgeAdjusted: document.getElementById('verdict-badge-adjusted'),
+  verdictIconAdjusted: document.getElementById('verdict-icon-adjusted'),
+  verdictTextAdjusted: document.getElementById('verdict-text-adjusted'),
+  verdictDivider: document.getElementById('verdict-divider'),
+  verdictColAdjusted: document.getElementById('verdict-col-adjusted'),
+  verdictAdjustedTitle: document.getElementById('verdict-adjusted-title'),
+  verdictAdjustedDescription: document.getElementById('verdict-adjusted-description'),
+  pillAdjusted: document.getElementById('pill-adjusted'),
 
   // Property
   propPrezzo: document.getElementById('prop-prezzo'),
@@ -244,7 +252,7 @@ const renderReport = (data) => {
   const pd = data.property_data;
   const om = data.omi_comparison;
 
-  // Verdict
+  // Verdict OMI
   const verdict = data.verdict.toLowerCase();
   const isAffare = verdict === 'affare';
   const isSoprastimato = verdict === 'soprastimato';
@@ -254,6 +262,31 @@ const renderReport = (data) => {
   els.verdictIcon.setAttribute('data-lucide', isAffare ? 'trending-down' : isSoprastimato ? 'trending-up' : 'minus');
   els.verdictTitle.textContent = isAffare ? 'Ottimo affare!' : isSoprastimato ? 'Attenzione: sopra il mercato' : 'Prezzo di mercato';
   els.verdictDescription.textContent = data.verdict_description;
+
+  // Verdict Qualitativo (affiancato)
+  if (data.adjusted_comparison && data.adjusted_comparison.verdict) {
+    const adjVerdict = data.adjusted_comparison.verdict.toLowerCase();
+    const adjIsAffare = adjVerdict === 'affare';
+    const adjIsSoprastimato = adjVerdict === 'soprastimato';
+
+    els.verdictBadgeAdjusted.className = `verdict-badge ${adjVerdict}`;
+    els.verdictBadgeAdjusted.classList.remove('hidden');
+    els.verdictTextAdjusted.textContent = data.adjusted_comparison.verdict;
+    els.verdictIconAdjusted.setAttribute('data-lucide', adjIsAffare ? 'trending-down' : adjIsSoprastimato ? 'trending-up' : 'minus');
+
+    els.verdictColAdjusted.classList.remove('hidden');
+    els.verdictDivider.classList.remove('hidden');
+    els.verdictAdjustedTitle.textContent = adjIsAffare ? 'Ottimo affare (AI)!' : adjIsSoprastimato ? 'Attenzione: sopra il mercato (AI)' : 'Prezzo di mercato (AI)';
+    els.verdictAdjustedDescription.textContent = data.adjusted_comparison.verdict_description;
+
+    const adjScost = data.adjusted_comparison.scostamento_percentuale;
+    els.pillAdjusted.innerHTML = `<i data-lucide="sparkles"></i> <span>${fmtPct(adjScost)} vs corretto</span>`;
+    els.pillAdjusted.style.color = adjScost === null || adjScost === undefined ? '' : adjScost < 0 ? 'var(--success)' : adjScost > 0 ? 'var(--danger)' : 'var(--warning)';
+  } else {
+    els.verdictBadgeAdjusted.classList.add('hidden');
+    els.verdictColAdjusted.classList.add('hidden');
+    els.verdictDivider.classList.add('hidden');
+  }
 
   // Score
   animateScore(data.investment_score);
